@@ -1,5 +1,5 @@
 <template>
-  <v-container style="background-color: #eeeeee; min-height: 100%">
+  <v-container style="background-color: #eeeeee; min-height: 100vh;" fluid>
     <v-col cols="12" sm="12" md="12">
       <v-col cols="12">
         <v-text-field
@@ -21,6 +21,7 @@
           v-model="categorySelected"
           :error-messages="emailErrors"
           required
+          
         ></v-select>
       </v-col>
 
@@ -52,14 +53,18 @@
                   >
                   <v-card-subtitle
                     style="position: absolute; bottom: -25px; right: -23px"
-                    ><v-btn text rounded small  fab @click="editItem(item)"
-                      ><v-icon size="20" color="#808080">mdi-pencil</v-icon></v-btn
+                    ><v-btn text rounded small fab @click="editItem(item)"
+                      ><v-icon size="20" color="#808080"
+                        >mdi-pencil</v-icon
+                      ></v-btn
                     ></v-card-subtitle
                   >
-                   <v-card-subtitle
-                    style="position: absolute; bottom: -25px; left: -23px;"
-                    ><v-btn text rounded small  fab @click="deleteItem(item)"
-                      ><v-icon size="20" color="#808080">mdi-trash-can-outline</v-icon></v-btn
+                  <v-card-subtitle
+                    style="position: absolute; bottom: -25px; left: -23px"
+                    ><v-btn text rounded small fab @click="deleteItem(item)"
+                      ><v-icon size="20" color="#808080"
+                        >mdi-trash-can-outline</v-icon
+                      ></v-btn
                     ></v-card-subtitle
                   >
 
@@ -103,74 +108,58 @@
 
     <!--EDITAR PRODUCTO-->
     <v-dialog
-        transition="dialog-top-transition"
-        max-width="600"
-        v-model="dialogEdit"
-      >
-        
-        <template >
-          <v-card>
-            <v-toolbar
-              color="primary"
-              dark
-            >Editar Producto</v-toolbar>
-             <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field
-                      label="Nombre"
-                      required
-                      v-model="itemName"
-                      
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12">
-                    <v-text-field
-                      label="Precio"
-                      required
-                      v-model="itemPrice"
-                    
-                      type="number"
-                    ></v-text-field>
-                  </v-col>
-                   <v-col cols="12">
-                    <v-text-field
-                      label="Cantidad"
-                      required
-                      v-model="itemCantidad"
-                  
-                      type="number"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12">
-                    <v-text-field
-                      label="Categoria"
-                      required
-                      v-model="itemCategory"
-                      
-                    ></v-text-field>
-                  </v-col>
+      transition="dialog-top-transition"
+      max-width="600"
+      v-model="dialogEdit"
+    >
+      <template>
+        <v-card>
+          <v-toolbar color="primary" dark>Editar Producto</v-toolbar>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Nombre"
+                    required
+                    v-model="itemName"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Precio"
+                    required
+                    v-model="itemPrice"
+                    type="number"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Cantidad"
+                    required
+                    v-model="itemCantidad"
+                    type="number"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Categoria"
+                    required
+                    v-model="itemCategory"
+                  ></v-text-field>
+                </v-col>
 
-                  <span class="mdi mdi-name"></span>
-                </v-row>
-              </v-container>
-            </v-card-text>
-            <v-card-actions class="justify-end">
-              <v-btn
-                text
-                @click="$store.state.dialogEdit = false"
-              >Close</v-btn>
-               <v-btn
-                text
-                @click="sendEdited"
-              >Enviar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </template>
-      </v-dialog>
-
-
+                <span class="mdi mdi-name"></span>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions class="justify-end">
+            <v-btn text @click="$store.state.dialogEdit = false">Close</v-btn>
+            <v-btn text @click="sendEdited">Enviar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
 
     <!--EDITAR PRODUCTO FORM-->
 
@@ -181,8 +170,7 @@
 <script>
 import FormGramos from "./FormGramos.vue";
 import Swal from "sweetalert2";
-import { ApiService } from '../api';
-
+import { ApiService } from "../api";
 
 export default {
   name: "Shop",
@@ -191,12 +179,12 @@ export default {
     return {
       search: "",
       categorySelected: "",
-      itemCantidad:null,
-      itemPrice:null,
-      itemName:null,
-      dialogEdit:false,
-      itemSelected:null,
-      itemCategory:null
+      itemCantidad: null,
+      itemPrice: null,
+      itemName: null,
+      dialogEdit: false,
+      itemSelected: null,
+      itemCategory: null,
     };
   },
   methods: {
@@ -235,30 +223,30 @@ export default {
 
       this.$store.state.dialogGramos = true;
     },
-    editItem(item){
-      
-      this.itemName=item.title
-      this.itemCantidad=item.cantidadExistente
-      this.itemPrice=item.price
-      this.itemCategory=item.category
-      this.dialogEdit=true
-      this.itemSelected=item
+    editItem(item) {
+      this.itemName = item.title;
+      this.itemCantidad = item.cantidadExistente;
+      this.itemPrice = item.price;
+      this.itemCategory = item.category;
+      this.dialogEdit = true;
+      this.itemSelected = item;
     },
-    sendEdited(){
-      this.itemSelected.price=this.itemPrice
-      this.itemSelected.title=this.itemName
-      this.itemSelected.cantidadExistente=this.itemCantidad
-      this.dialogEdit=false
-      ApiService.editProduct(this.itemSelected.id,this.itemSelected).then(res=>{
-        console.log(res)
-      })
+    sendEdited() {
+      this.itemSelected.price = this.itemPrice;
+      this.itemSelected.title = this.itemName;
+      this.itemSelected.cantidadExistente = this.itemCantidad;
+      this.dialogEdit = false;
+      ApiService.editProduct(this.itemSelected.id, this.itemSelected).then(
+        (res) => {
+          console.log(res);
+        }
+      );
+    },
 
-    },
     deleteItem(item) {
-    
       Swal.fire({
         title: `Eliminar ${item.title} del inventario?`,
-       
+
         showCancelButton: true,
         confirmButtonText: `Eliminar`,
         denyButtonText: `Don't save`,
@@ -266,17 +254,17 @@ export default {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
           Swal.fire("Eliminado", "", "success");
-          this.$store.state.items=this.$store.state.items.filter(i=>i.id!==item.id)
-          ApiService.deleteProducto(item.id).then(res=>{
-            console.log(res)
-          })
+          this.$store.state.items = this.$store.state.items.filter(
+            (i) => i.id !== item.id
+          );
+          ApiService.deleteProducto(item.id).then((res) => {
+            console.log(res);
+          });
         } else if (result.isDenied) {
           Swal.fire("Changes are not saved", "", "info");
         }
       });
-     
     },
-
   },
   computed: {
     items() {
@@ -306,22 +294,7 @@ export default {
     },
   },
   mounted() {
-    ApiService.getAllProducts().then(res=>{
-      res.data.map(p=>{
-        let aux = this.$store.state.items.filter(item=>item.id===p.id)
-        if(aux.length===0){
-          this.$store.state.items.push(p)
-          let aux = p.category.split(' ')
-          aux.map(c=>{
-            if(!this.$store.state.categories.includes(c)){
-              this.$store.state.categories.push(c)
-            }
-          })
-          
-          return;
-        }
-      })
-    })
+   
   },
 };
 </script>

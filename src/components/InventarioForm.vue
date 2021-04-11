@@ -89,7 +89,8 @@ export default {
         color: "#ffffff",
         gramos: this.gramos,
         unidad:this.unidadSelected,
-        category:this.category+" "+'todos'
+        category:this.category+" "+'todos',
+        negocioId:this.$store.state.negocioSelected.id
       };
       this.$store.state.items.push(item);
        ApiService.postProducto(item).then(

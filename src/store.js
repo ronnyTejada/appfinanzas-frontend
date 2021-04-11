@@ -1,5 +1,7 @@
 import Vue from "vue";
 const moment = require("moment");
+import Cookies from 'js-cookie'
+import { ApiService } from "./api";
 
 
 import Vuex from "vuex";
@@ -10,11 +12,17 @@ export default new Vuex.Store({
     cart: [],
     dialogCart: false,
     dialogGramos: false,
-    itemSelected:{},
-    historialVentas:[],
-    categories:['todos','viveres','harinas','charcuteria','granos'],
+    itemSelected: {},
+    historialVentas: [],
+    categories: ['todos'],
+    user:Cookies.get('token'),
+    negocios:[],
+    negocioSelected:null,
+    dialogNewNeg:false ,
+    dialogNegocios:false,
     items: [
-      {
+
+      /*{
         id: "001",
         color: "#ffffff",
         src:
@@ -22,9 +30,9 @@ export default new Vuex.Store({
         title: "Harian Pan",
         price: 1850,
         cantidadToCart: 1,
-        unidad:'Kg',
-        category:'viveres harinas todos',
-        cantidadExistente:5
+        unidad: 'Kg',
+        category: 'viveres harinas todos',
+        cantidadExistente: 5
       },
       {
         id: "002",
@@ -35,9 +43,9 @@ export default new Vuex.Store({
         title: "azucar",
         price: 1000,
         cantidadToCart: 1,
-        unidad:'Kg',
-        category:'viveres todos',
-        cantidadExistente:35
+        unidad: 'Kg',
+        category: 'viveres todos',
+        cantidadExistente: 35
 
       },
       {
@@ -49,9 +57,9 @@ export default new Vuex.Store({
         title: "Aceite",
         price: 3500,
         cantidadToCart: 1,
-        unidad:'Lts.',
-        category:'viveres todos',
-        cantidadExistente:25
+        unidad: 'Lts.',
+        category: 'viveres todos',
+        cantidadExistente: 25
 
       },
       {
@@ -63,9 +71,9 @@ export default new Vuex.Store({
         title: "Arroz",
         price: 2800,
         cantidadToCart: 1,
-        unidad:'Kg',
-        category:'viveres todos',
-        cantidadExistente:50
+        unidad: 'Kg',
+        category: 'viveres todos',
+        cantidadExistente: 50
 
       },
       {
@@ -77,9 +85,9 @@ export default new Vuex.Store({
         title: "Pasta",
         price: 2600,
         cantidadToCart: 1,
-        unidad:'Kg',
-        category:'viveres todos',
-        cantidadExistente:30
+        unidad: 'Kg',
+        category: 'viveres todos',
+        cantidadExistente: 30
 
       },
       {
@@ -91,10 +99,10 @@ export default new Vuex.Store({
         title: "Caraotas",
         price: 3000,
         cantidadToCart: 1,
-        gramos:true,
-        unidad:'Kg',
-        category:'granos todos',
-        cantidadExistente:45
+        gramos: true,
+        unidad: 'Kg',
+        category: 'granos todos',
+        cantidadExistente: 45
 
       },
       {
@@ -106,9 +114,9 @@ export default new Vuex.Store({
         title: "Sal",
         price: 1000,
         cantidadToCart: 1,
-        unidad:'Kg',
-        category:'viveres todos',
-        cantidadExistente:50
+        unidad: 'Kg',
+        category: 'viveres todos',
+        cantidadExistente: 50
 
       },
       {
@@ -120,47 +128,97 @@ export default new Vuex.Store({
         title: "Queso",
         price: 5000,
         cantidadToCart: 1,
-        unidad:'Kg',
-        category:'charcuteria todos',
-        cantidadExistente:20
-        
+        unidad: 'Kg',
+        category: 'charcuteria todos',
+        cantidadExistente: 20
 
-      },
+
+      },*/
     ],
 
   },
   getters: {
-
+    isUserLogged(state) {
+      if (state.user) {
+        return state.user
+      } else {
+        return null
+      }
+    }
   },
   mutations: {
+    setUser(state, token) {
+      state.user = token
+      console.log(state.user)
+
+    },
+    setNegocios(state, token) {
+      ApiService.getNegocios(token).then((res) => {
+        //  this.$store.state.negocios = [];
+        res.data.map((n) => {
+          state.negocios.push(n);
+        });
+        if (state.negocios.length === 0) {
+          state.dialogNewNeg = true;
+        }
+        state.negocioSelected = state.negocios[0];
+        state.negocioSelected.img = `https://ui-avatars.com/api/?name=${state.negocioSelected.name.replace(
+          " ",
+          "+"
+        )}`;
+  
+      
+        ApiService.getAllProducts(state.negocioSelected.id).then(
+          (res) => {
+            res.data.map((p) => {
+              let aux = state.items.filter(
+                (item) => item.id === p.id
+              );
+              if (aux.length === 0) {
+                state.items.push(p);
+                let aux = p.category.split(" ");
+                aux.map((c) => {
+                  if (!state.categories.includes(c)) {
+                    state.categories.push(c);
+                  }
+                });
+  
+                return;
+              }
+            });
+          }
+        );
+      });
+
+    },
     itemToCart(state, item) {
       let existe = false
-  
-        console.log(item)
-        state.cart.map(i => {
-          if (i.id === item.id && i.unidad === item.unidad) {
-            i.cantidadToCart += parseInt(item.cantidadToCart)
-            i.subtotal += parseInt(item.price)
-            item.cantidadExistente-=1
-            existe = true
-          }
-        })
-        if (!existe){
-          item.subtotal=parseInt(item.price)
-          state.cart.push(item)
-          item.cantidadExistente-=1
+
+      console.log(item)
+      state.cart.map(i => {
+        if (i.id === item.id && i.unidad === item.unidad) {
+          i.cantidadToCart += parseInt(item.cantidadToCart)
+          i.subtotal += parseInt(item.price)
+          item.cantidadExistente -= 1
+          existe = true
         }
-  
-        
-      
+      })
+      if (!existe) {
+        item.subtotal = parseInt(item.price)
+        state.cart.push(item)
+        item.cantidadExistente -= 1
+      }
+
+
+
     },
-    pedidoToHistory(state,items){
-      items.map(i=>{
-        i.fecha=moment().format("l");
+    pedidoToHistory(state, items) {
+      items.map(i => {
+        i.fecha = moment().format("l");
         state.historialVentas.push(i)
 
       })
-      state.cart=[]
+      state.cart = []
     }
 
   }
