@@ -35,4 +35,15 @@ export const ApiService = {
         negocio
     }),
     getNegocios: (propietarioId)=>axios.get(baseUrl+'getNegocios/?propietario=' + propietarioId),
+
+    //HISTORIAL DE VENTAS FUNCTIONS
+    pedidoToHistory:(pedido)=>axios.post(baseUrl+'pedidoToHistory/',{
+        pedido
+    }),
+    getPedidosFromHistory: (negocioId)=>axios.get(baseUrl+'getPedidosFromHistory/?negocio=' + negocioId),
+    //CLIENTES FUNCTIONS
+    postCliente:(cliente)=>axios.post(baseUrl+'postCliente/',{
+        cliente
+    }),
+
 }

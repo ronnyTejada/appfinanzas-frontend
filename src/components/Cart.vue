@@ -2,7 +2,6 @@
   <v-row justify="center">
     <v-dialog v-model="$store.state.dialogCart" width="600px">
       <v-card>
-        
         <v-card-title>
           <span class="headline" v-if="$store.state.cart.length === 0"
             >Su carrito esta vacio</span
@@ -49,8 +48,45 @@
           >
             Cerrar
           </v-btn>
-          <v-btn color="green darken-1" text @click="procesarPedido">
+          <v-btn color="green darken-1" text @click="showDetalles">
             Procesar Pedido
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogCliente" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Detalles de Compra</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field label="Cedula" v-model="ciCliente" required></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field label="Nombre" v-if="!clienteExistente" v-model="nombreCliente" required>{{clienteExistente}}</v-text-field>
+                <v-text-field label="Nombre" v-else v-model="clienteExistente.name" required>{{clienteExistente}}</v-text-field>
+              
+              </v-col>
+
+              <v-radio-group v-model="status" row>
+                <v-radio label="Pagado" :value="true"></v-radio>
+                <v-radio label="Deuda" :value="false"></v-radio>
+              </v-radio-group>
+            </v-row>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="cancelar">
+            Cancelar
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="procesarPedido">
+            Aceptar
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -59,6 +95,7 @@
 </template>
 <script>
 import Swal from "sweetalert2";
+const shortid = require("shortid");
 
 export default {
   name: "Cart",
@@ -66,7 +103,10 @@ export default {
     dialog: true,
     page: 1,
     pageCount: 0,
-
+    dialogCliente: false,
+    ciCliente: null,
+    nombreCliente: null,
+    status:null,
     headers: [
       {
         text: "Nombre",
@@ -74,7 +114,7 @@ export default {
         sortable: false,
         value: "title",
       },
-      { text: "cantidadToCart", value: "cantidadToCart" },
+      { text: "cantidad", value: "cantidadToCart" },
       { text: "Precio", value: "price" },
       { text: "Sub-total", value: "subtotal" },
       { text: "Acciones", value: "actions" },
@@ -88,11 +128,45 @@ export default {
       });
       return total;
     },
+    clienteExistente(){
+       
+       let cliente = this.$store.state.clientes.filter(c=>c.ci.includes(this.ciCliente))
+       if(cliente[0]){
+         return cliente[0]
+       }else{
+         return ''
+       }
+    }
   },
   methods: {
-    procesarPedido() {
-      this.$store.commit("pedidoToHistory", this.$store.state.cart);
+    showDetalles() {
+      this.dialogCliente = true;
+
+     
+    },
+    procesarPedido(){
+      var cliente
+      if(this.clienteExistente){
+        cliente=this.clienteExistente
+      }else{
+        cliente={
+           id: shortid.generate(),
+           name:this.nombreCliente,
+           ci:this.ciCliente,
+           compras:[]
+        }
+      }
+
+      this.$store.state.cart.map(i=>{
+        cliente.compras.push(i)
+      })
+
+     
+
+      this.$store.commit("pedidoToHistory", {items:this.$store.state.cart, cliente:cliente.ci,pagado:this.status});
+      this.$store.commit("saveCliente",cliente)
       this.$store.state.dialogCart = false;
+      this.dialogCliente=false
       Swal.fire({
         position: "center",
         icon: "success",
@@ -100,12 +174,14 @@ export default {
         showConfirmButton: false,
         timer: 1500,
       });
+
+      console.log(cliente)
     },
     deleteItem(item) {
-      console.log(item)
+      console.log(item);
       Swal.fire({
         title: `Eliminar ${item.title}`,
-       
+
         showCancelButton: true,
         confirmButtonText: `Eliminar`,
         denyButtonText: `Don't save`,
@@ -113,12 +189,13 @@ export default {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
           Swal.fire("Eliminado", "", "success");
-          this.$store.state.cart=this.$store.state.cart.filter(i=>i.id!==item.id)
+          this.$store.state.cart = this.$store.state.cart.filter(
+            (i) => i.id !== item.id
+          );
         } else if (result.isDenied) {
           Swal.fire("Changes are not saved", "", "info");
         }
       });
-     
     },
   },
   mounted() {

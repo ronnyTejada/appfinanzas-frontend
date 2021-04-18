@@ -181,7 +181,6 @@ export default {
     this.$store.commit('setNegocios',this.$store.getters.isUserLogged)
 
     
-    
   },
 };
 </script>

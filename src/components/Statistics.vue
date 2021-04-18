@@ -1,7 +1,39 @@
 <template>
   <v-container style="background-color: #eeeeee; height: auto" fluid>
     <v-col>
-      <span style="color: gray; margin-bottom: 15px">ESTADISTICAS</span>
+
+      <div class="div-contenedor">
+        <span style="color: gray; margin-bottom: 15px">ESTADISTICAS</span>
+
+        <v-dialog
+          ref="dialog"
+          v-model="modal"
+          :return-value.sync="date"
+          persistent
+          width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <div >
+              <v-text-field
+              v-model="date"
+              label="Filtrar"
+              prepend-icon="mdi-calendar"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+             
+            ></v-text-field>
+            </div>
+          </template>
+          <v-date-picker v-model="date" type="month" scrollable>
+            <v-spacer></v-spacer>
+            <v-btn text color="primary" @click="modal = false"> Cancel </v-btn>
+            <v-btn text color="primary" @click="$refs.dialog.save(date)">
+              OK
+            </v-btn>
+          </v-date-picker>
+        </v-dialog>
+      </div>
 
       <v-col cols="12" sm="12" md="12">
         <v-row style="background-color: white" class="elevation-5">
@@ -14,16 +46,23 @@
                 @click="goToObrasCharts"
                 style="background-color: none"
               >
-                <v-card-title >
-                  <v-icon style="font-size: 55px; color: #6D7CFC; margin-right:25px"
+                <v-card-title>
+                  <v-icon
+                    style="font-size: 55px; color: #6d7cfc; margin-right: 25px"
                     >mdi-handshake</v-icon
                   >
-                  
-                  <h3>800</h3>
+
+                  <h3>{{ $store.state.historialVentas.length }}</h3>
                 </v-card-title>
 
                 <v-card-subtitle
-                  style="position: absolute; right: 45px; top: 70px;font-size: 20px;color:#2196F3"
+                  style="
+                    position: absolute;
+                    right: 45px;
+                    top: 70px;
+                    font-size: 20px;
+                    color: #2196f3;
+                  "
                   >Ventas</v-card-subtitle
                 >
               </v-card>
@@ -39,15 +78,23 @@
                 @click="goToMaterialesCharts"
                 style="background-color: none"
               >
-                <v-card-title >
-                  <v-icon style="font-size: 55px; color: #6D7CFC;margin-right:25px"
-                    >mdi-cash-multiple</v-icon>
-                  
-                  <h3>2500$</h3>
+                <v-card-title>
+                  <v-icon
+                    style="font-size: 55px; color: #6d7cfc; margin-right: 25px"
+                    >mdi-cash-multiple</v-icon
+                  >
+
+                  <h3>{{ ingresos }}Bs</h3>
                 </v-card-title>
 
                 <v-card-subtitle
-                  style="position: absolute; right: 30px; top: 70px;font-size: 20px;color:#2196F3"
+                  style="
+                    position: absolute;
+                    right: 30px;
+                    top: 70px;
+                    font-size: 20px;
+                    color: #2196f3;
+                  "
                   >Ingresos</v-card-subtitle
                 >
               </v-card>
@@ -62,17 +109,25 @@
                 :elevation="0"
                 @click="goToHerramientasCharts"
               >
-                <v-card-title >
-                  <v-icon style="font-size: 55px; color: #6D7CFC;margin-right:25px"
+                <v-card-title>
+                  <v-icon
+                    style="font-size: 55px; color: #6d7cfc; margin-right: 25px"
                     >mdi-package-variant</v-icon
                   >
-                  
+
                   <h3>2000</h3>
                 </v-card-title>
 
                 <v-card-subtitle
-                  style="position: absolute; right: 15px; top: 70px;font-size: 20px;color:#2196F3"
-                  >Total <br/> Productos</v-card-subtitle
+                  style="
+                    position: absolute;
+                    right: 15px;
+                    top: 70px;
+                    font-size: 20px;
+                    color: #2196f3;
+                  "
+                  >Total <br />
+                  Productos</v-card-subtitle
                 >
               </v-card>
             </v-hover>
@@ -88,22 +143,34 @@
                 style="background-color: none"
               >
                 <v-card-title class="h">
-                  <v-icon style="font-size: 55px; color: #6D7CFC;margin-right:25px"
+                  <v-icon
+                    style="font-size: 55px; color: #6d7cfc; margin-right: 25px"
                     >mdi-library-shelves</v-icon
                   >
-                  
-                  <h3>500</h3>
+
+                  <h3>{{ $store.state.items.length }}</h3>
                 </v-card-title>
 
                 <v-card-subtitle
-                  style="position: absolute; right: 30px; top: 70px;font-size: 20px;color:#2196F3"
-                  >Invetario <br/> Actual</v-card-subtitle
+                  style="
+                    position: absolute;
+                    right: 30px;
+                    top: 70px;
+                    font-size: 20px;
+                    color: #2196f3;
+                  "
+                  >Invetario <br />
+                  Actual</v-card-subtitle
                 >
               </v-card>
             </v-hover>
           </v-col>
         </v-row>
-        <v-row style="background-color: white; margin-top: 50px" cols="12" class="elevation-5">
+        <v-row
+          style="background-color: white; margin-top: 50px"
+          cols="12"
+          class="elevation-5"
+        >
           <v-col style="text-align: center" sm="12" md="6">
             <h4>Ventas 2020</h4>
             <area-chart
@@ -141,7 +208,6 @@
                 ['Queso', 80],
                 ['Pastas', 110],
                 ['Arroz', 90],
-                
               ]"
               :donut="true"
             ></pie-chart>
@@ -164,12 +230,21 @@
     </v-col>
   </v-container>
 </template>
+<style scoped>
+  .div-contenedor{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+</style>
 <script>
 export default {
   name: "Statistics",
 
   data: () => ({
     datacollection: null,
+    date:null,
     data: [
       { name: "Sal", data: { Productos: 3 } },
       { name: "Pan Dulce", data: { Productos: 5 } },
@@ -221,7 +296,6 @@ export default {
         name: "Galletas",
         data: { Productos: 8 },
       },
-      
     ],
   }),
   methods: {
@@ -268,7 +342,15 @@ export default {
       return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
     },
   },
-
+  computed: {
+    ingresos() {
+      var ingresos = 0;
+      this.$store.state.historialVentas.map((venta) => {
+        ingresos += parseInt(venta.subtotal);
+      });
+      return ingresos;
+    },
+  },
   mounted() {
     this.fillData();
   },

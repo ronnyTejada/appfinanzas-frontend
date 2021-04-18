@@ -1,5 +1,6 @@
 <template>
     <v-dialog
+        v-if="$store.getters.isUserLogged"
         transition="dialog-top-transition"
         max-width="600"
         v-model="$store.state.dialogNewNeg"
