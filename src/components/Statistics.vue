@@ -1,7 +1,6 @@
 <template>
   <v-container style="background-color: #eeeeee; height: auto" fluid>
     <v-col>
-
       <div class="div-contenedor">
         <span style="color: gray; margin-bottom: 15px">ESTADISTICAS</span>
 
@@ -13,16 +12,15 @@
           width="290px"
         >
           <template v-slot:activator="{ on, attrs }">
-            <div >
+            <div>
               <v-text-field
-              v-model="date"
-              label="Filtrar"
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-             
-            ></v-text-field>
+                v-model="date"
+                label="Filtrar"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
             </div>
           </template>
           <v-date-picker v-model="date" type="month" scrollable>
@@ -52,7 +50,7 @@
                     >mdi-handshake</v-icon
                   >
 
-                  <h3>{{ $store.state.historialVentas.length }}</h3>
+                  <h3>{{ historialVentas }}</h3>
                 </v-card-title>
 
                 <v-card-subtitle
@@ -115,20 +113,19 @@
                     >mdi-package-variant</v-icon
                   >
 
-                  <h3>2000</h3>
+                  <h3>{{ historialDeudas }}</h3>
                 </v-card-title>
 
                 <v-card-subtitle
                   style="
                     position: absolute;
-                    right: 15px;
+                    right: 10px;
                     top: 70px;
                     font-size: 20px;
                     color: #2196f3;
                   "
-                  >Total <br />
-                  Productos</v-card-subtitle
-                >
+                  >Deudas por <br />Cobrar
+                </v-card-subtitle>
               </v-card>
             </v-hover>
           </v-col>
@@ -145,10 +142,10 @@
                 <v-card-title class="h">
                   <v-icon
                     style="font-size: 55px; color: #6d7cfc; margin-right: 25px"
-                    >mdi-library-shelves</v-icon
+                    >mdi-account-group</v-icon
                   >
 
-                  <h3>{{ $store.state.items.length }}</h3>
+                  <h3>{{ $store.state.clientes.length }}</h3>
                 </v-card-title>
 
                 <v-card-subtitle
@@ -159,8 +156,7 @@
                     font-size: 20px;
                     color: #2196f3;
                   "
-                  >Invetario <br />
-                  Actual</v-card-subtitle
+                  >Clientes</v-card-subtitle
                 >
               </v-card>
             </v-hover>
@@ -172,23 +168,23 @@
           class="elevation-5"
         >
           <v-col style="text-align: center" sm="12" md="6">
-            <h4>Ventas 2020</h4>
-            <area-chart
-              :data="{
-                Enero: 2,
-                Febrero: 5,
-                Marzo: 10,
-                Abril: 15,
-                Mayo: 11,
-                Junio: 22,
-                Julio: 15,
-                Agosto: 25,
-                Septiembre: 20,
-                Obtubre: 30,
-                Noviembre: 28,
-                Diciembre: 35,
-              }"
-            ></area-chart>
+            <h4>Top Clientes</h4>
+            <v-simple-table>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-center">C.i</th>
+                    <th class="text-center">Compras</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in topClientes" :key="item.name">
+                    <td>{{ item.ci }}</td>
+                    <td>{{ item.compras }}</td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
           </v-col>
           <v-col
             style="text-align: center; background-color: white"
@@ -196,21 +192,7 @@
             md="6"
           >
             <h4>Mas vendidos</h4>
-            <pie-chart
-              :data="[
-                ['caraotas', 100],
-                ['Harina Pan', 95],
-                ['Queso', 80],
-                ['Pastas', 110],
-                ['Arroz', 90],
-                ['caraotas', 100],
-                ['Harina Pan', 95],
-                ['Queso', 80],
-                ['Pastas', 110],
-                ['Arroz', 90],
-              ]"
-              :donut="true"
-            ></pie-chart>
+            <pie-chart :data="masVendidos" :donut="true"></pie-chart>
           </v-col>
         </v-row>
       </v-col>
@@ -231,20 +213,52 @@
   </v-container>
 </template>
 <style scoped>
-  .div-contenedor{
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-between;
-  }
+.div-contenedor {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+}
 </style>
 <script>
+//const moment = require("moment");
+
 export default {
   name: "Statistics",
 
   data: () => ({
     datacollection: null,
-    date:null,
+    date: "",
+    desserts: [
+      {
+        name: "24173955",
+        calories: 159,
+      },
+      {
+        name: "123456",
+        calories: 237,
+      },
+      {
+        name: "654321",
+        calories: 262,
+      },
+      {
+        name: "741258",
+        calories: 305,
+      },
+      {
+        name: "951753",
+        calories: 356,
+      },
+      {
+        name: "357159",
+        calories: 375,
+      },
+      {
+        name: "000000",
+        calories: 392,
+      },
+    ],
     data: [
       { name: "Sal", data: { Productos: 3 } },
       { name: "Pan Dulce", data: { Productos: 5 } },
@@ -298,62 +312,128 @@ export default {
       },
     ],
   }),
-  methods: {
-    fillData() {
-      this.datacollection = {
-        labels: [
-          "Enero",
-          "Febrero",
-          "Marzo",
-          "Abril",
-          "Mayo",
-          "Junio",
-          "Julio",
-          "Agosto",
-          "Septiembre",
-          "Obtubre",
-          "Novienbre",
-          "Diciembre",
-        ],
-        datasets: [
-          {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: [
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-            ],
-            fill: false,
-          },
-        ],
-      };
-    },
-    getRandomInt() {
-      return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
-    },
-  },
+  methods: {},
   computed: {
     ingresos() {
       var ingresos = 0;
-      this.$store.state.historialVentas.map((venta) => {
-        ingresos += parseInt(venta.subtotal);
-      });
+      if (this.date !== "") {
+        this.$store.state.historialVentas.map((venta) => {
+          let c = venta.fecha[0];
+          let e = venta.fecha[1];
+          let a = this.date[5];
+          let b = this.date[6];
+          let aux = a + b;
+          let aux2 = c + e;
+          console.log(aux === aux2);
+          if (aux === aux2) {
+            ingresos += parseInt(venta.subtotal);
+          }
+        });
+      } else {
+        this.$store.state.historialVentas.map((venta) => {
+          ingresos += parseInt(venta.subtotal);
+        });
+      }
       return ingresos;
     },
+    historialDeudas() {
+      let data = [];
+      if (this.date !== "") {
+        this.$store.state.deudas.map((d) => {
+          console.log(d.fecha[0], d.fecha[1]);
+          let c = d.fecha[0];
+          let e = d.fecha[1];
+          let a = this.date[5];
+          let b = this.date[6];
+          let aux = a + b;
+          let aux2 = c + e;
+          console.log(aux === aux2);
+          if (aux === aux2) {
+            data.push(d);
+          }
+        });
+      } else {
+        this.$store.state.deudas.map((d) => {
+          data.push(d);
+        });
+      }
+      return data.length;
+    },
+    historialVentas() {
+      let data = [];
+      if (this.date !== "") {
+        this.$store.state.historialVentas.map((d) => {
+          console.log(d.fecha[0], d.fecha[1]);
+          let c = d.fecha[0];
+          let e = d.fecha[1];
+          let a = this.date[5];
+          let b = this.date[6];
+          let aux = a + b;
+          let aux2 = c + e;
+          console.log(aux === aux2);
+          if (aux === aux2) {
+            data.push(d);
+          }
+        });
+      } else {
+        this.$store.state.historialVentas.map((d) => {
+          data.push(d);
+        });
+      }
+      return data.length;
+    },
+    masVendidos() {
+      let data = [];
+
+      if (this.date !== "") {
+        this.$store.state.masVendidos.map((d) => {
+          let c = d.fecha[0];
+          let e = d.fecha[1];
+          let a = this.date[5];
+          let b = this.date[6];
+          let aux = a + b;
+          let aux2 = c + e;
+
+          if (aux === aux2) {
+            data.push([d.title, d.ventas]);
+          }
+        });
+      } else {
+        this.$store.state.masVendidos.map((d) => {
+          data.push([d.title, d.ventas]);
+        });
+      }
+
+      return data;
+    },
+    topClientes() {
+      let data = [];
+      if (this.date !== "") {
+        this.$store.state.topClientes.map((d) => {
+          let c = d.fecha[0];
+          let e = d.fecha[1];
+          let a = this.date[5];
+          let b = this.date[6];
+          let aux = a + b;
+          let aux2 = c + e;
+
+          if (aux === aux2) {
+            data.push(d);
+          }
+        });
+      }else{
+        this.$store.state.topClientes.map((d) => {
+        
+      
+          data.push(d);
+        
+      });
+      }
+
+      return data;
+    },
   },
-  mounted() {
-    this.fillData();
-  },
+  mounted() {},
 };
 </script>
 <style>

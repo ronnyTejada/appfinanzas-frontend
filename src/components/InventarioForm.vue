@@ -90,7 +90,8 @@ export default {
         gramos: this.gramos,
         unidad:this.unidadSelected,
         category:this.category+" "+'todos',
-        negocioId:this.$store.state.negocioSelected.id
+        negocioId:this.$store.state.negocioSelected.id,
+        ventas:0
       };
       this.$store.state.items.push(item);
        ApiService.postProducto(item).then(

@@ -190,6 +190,7 @@ export default {
   methods: {
     sendToCard(item) {
       if (item.cantidadExistente > 0) {
+    
         item.cantidadExistente -= 1;
         let item2 = {
           title: item.title,
@@ -197,6 +198,7 @@ export default {
           price: parseInt(item.price),
           id: item.id,
           unidad: item.unidad,
+          ventas:item.ventas
         };
         this.$store.commit("itemToCart", item2);
         this.$notify({

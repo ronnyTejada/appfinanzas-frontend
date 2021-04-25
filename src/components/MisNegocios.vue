@@ -38,17 +38,25 @@ export default {
   }),
   methods: {
     selectNegocio() {
+       ApiService.selectNegocio(this.negocioSelected.id, this.$store.state.negocioSelected.id).then(res=>{
+        console.log(res)
+        })
+      this.$store.commit('cleanState')
       this.$store.state.negocioSelected = this.negocioSelected;
       this.$store.state.negocioSelected.img = `https://ui-avatars.com/api/?name=${this.$store.state.negocioSelected.name.replace(
         " ",
         "+"
       )}`;
 
+     
+
       ApiService.getAllProducts(this.$store.state.negocioSelected.id).then(
         (res) => {
           if (res.data.length > 0) {
+                          console.log(res.data)
+
             res.data.map((p) => {
-              this.$store.state.items=[]
+            //  this.$store.state.items=[]
               this.$store.state.categories=['todos']
               let aux =this.$store.state.items.filter((item) => item.id === p.id);
               if (aux.length === 0) {
@@ -70,6 +78,54 @@ export default {
           }
         }
       );
+
+      ApiService.getPedidosFromHistory(
+          this.$store.state.negocioSelected.id
+        ).then(async (res) => {
+          this.$store.state.historialVentas = [];
+          res.data.map(p => {
+            if(p.pagado){
+              this.$store.state.historialVentas.push(p)
+             
+            }else{
+              this.$store.state.deudas.push(p)
+
+            }
+          })
+          this.$store.state.historialVentas.map(i=>{
+            let existeI=false
+            let existeC=false
+
+            this.$store.state.masVendidos.map(item=>{
+              if(item.id===i.id){
+                item.ventas+=i.cantidadToCart
+                
+                existeI=true
+              }
+             
+            })
+            this.$store.state.topClientes.map(c=>{
+              if(c.ci === i.cliente){
+                c.compras+=1
+                existeC=true
+              }
+            })
+            if(!existeI){
+              this.$store.state.masVendidos.push(i)
+            }
+            if(!existeC){
+              this.$store.state.topClientes.push({ci:i.cliente,compras:1,fecha:i.fecha})
+            }
+          })
+        });
+
+        ApiService.getClientes(this.$store.state.negocioSelected.id).then(res=>{
+          res.data.map(cliente=>{
+            this.$store.state.clientes.push(cliente)
+            console.log(this.$store.state.clientes)
+          })
+        })
+      
     },
   },
 };

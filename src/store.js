@@ -2,6 +2,7 @@ import Vue from "vue";
 const moment = require("moment");
 import Cookies from 'js-cookie'
 import { ApiService } from "./api";
+const shortid = require("shortid");
 
 
 import Vuex from "vuex";
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     dialogGramos: false,
     itemSelected: {},
     historialVentas: [],
+    deudas: [],
     categories: ['todos'],
     user: Cookies.get('token'),
     negocios: [],
@@ -21,8 +23,9 @@ export default new Vuex.Store({
     dialogNewNeg: false,
     dialogNegocios: false,
     items: [],
-    clientes: [{ id: '001', name: 'ronny tejada', ci: '24173955', compras: [] }, { id: '002', name: 'rihanna', ci: '123456', compras: [] }, { id: '003', name: 'neymar', ci: '6789', compras: [] }]
-
+    clientes: [],
+    masVendidos: [],
+    topClientes: []
   },
   getters: {
     isUserLogged(state) {
@@ -48,7 +51,9 @@ export default new Vuex.Store({
         if (state.negocios.length === 0) {
           state.dialogNewNeg = true;
         }
-        state.negocioSelected = state.negocios[0];
+        console.log(state.negocios)
+        state.negocioSelected = state.negocios.filter(n=>n.selected===true);
+        state.negocioSelected=state.negocioSelected[0]
         state.negocioSelected.img = `https://ui-avatars.com/api/?name=${state.negocioSelected.name.replace(
           " ",
           "+"
@@ -75,6 +80,53 @@ export default new Vuex.Store({
             });
           }
         );
+
+        ApiService.getPedidosFromHistory(
+          state.negocioSelected.id
+        ).then(async (res) => {
+          state.historialVentas = [];
+          res.data.map(p => {
+            if (p.pagado) {
+              state.historialVentas.push(p)
+
+            } else {
+              state.deudas.push(p)
+
+            }
+          })
+          state.historialVentas.map(i => {
+            let existeI = false
+            let existeC = false
+
+            state.masVendidos.map(item => {
+              if (item.id === i.id) {
+                item.ventas += i.cantidadToCart
+
+                existeI = true
+              }
+
+            })
+            state.topClientes.map(c => {
+              if (c.ci === i.cliente) {
+                c.compras += 1
+                existeC = true
+              }
+            })
+            if (!existeI) {
+              state.masVendidos.push(i)
+            }
+            if (!existeC) {
+              state.topClientes.push({ ci: i.cliente, compras: 1, fecha: i.fecha })
+            }
+          })
+        });
+
+        ApiService.getClientes(state.negocioSelected.id).then(res => {
+          res.data.map(cliente => {
+            state.clientes.push(cliente)
+            console.log(state.clientes)
+          })
+        })
       });
 
 
@@ -86,7 +138,7 @@ export default new Vuex.Store({
       console.log(item)
       state.cart.map(i => {
         if (i.id === item.id && i.unidad === item.unidad) {
-          i.cantidadToCart += parseInt(item.cantidadToCart)
+          i.cantidadToCart += 1
           i.subtotal += parseInt(item.price)
           item.cantidadExistente -= 1
           existe = true
@@ -103,11 +155,20 @@ export default new Vuex.Store({
     },
     pedidoToHistory(state, data) {
       data.items.map(i => {
-        i.fecha = moment().format("l");
+        i.fecha = moment().format('L');
         i.negocioId = state.negocioSelected.id
-        i.pagado=data.pagado
-        i.cliente=data.cliente
-        state.historialVentas.push(i)
+        i.pagado = data.pagado
+        i.cliente = data.cliente
+        i.idH = shortid.generate()
+        console.log(i)
+        if (i.pagado) {
+          // let existe=false
+          i.ventas += i.cantidadToCart
+          state.historialVentas.push(i)
+
+        } else {
+          state.deudas.push(i)
+        }
 
       })
       state.cart = []
@@ -115,17 +176,31 @@ export default new Vuex.Store({
         console.log(res)
       })
     },
-    saveCliente(state, cliente){
-      let aux = state.clientes.filter(c=>c.id===cliente.id)
-      if(aux.length===0){
+    saveCliente(state, cliente) {
+      let aux = state.clientes.filter(c => c.id === cliente.id)
+      if (aux.length === 0) {
         state.clientes.push(cliente)
-      }else{
+      } else {
         aux = cliente
       }
 
-      ApiService.postCliente(cliente).then(res=>{
+      ApiService.postCliente(cliente).then(res => {
         console.log(res)
       })
+    },
+    cleanState(state) {
+        state.cart = []
+        state.dialogCart = false
+        state.dialogGramos = false
+        state.itemSelected = {}
+        state.historialVentas = []
+        state.deudas = []
+        state.categories = ['todos']
+        state.items = []
+        state.clientes = []
+        state.masVendidos = []
+        state.topClientes = []
+
     }
 
   }

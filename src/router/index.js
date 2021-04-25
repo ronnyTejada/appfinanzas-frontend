@@ -7,6 +7,7 @@ import Statistics from '../components/Statistics.vue'
 import SignUp from '../components/SignUp.vue'
 import store from "../store";
 import LoginUser from "../components/Login.vue"
+import Deudas from "../components/Deudas.vue"
 
 
 Vue.use(VueRouter)
@@ -45,6 +46,15 @@ const routes = [
           }
 
     },
+    {
+      path:'/deudas',
+      name:'Deudas',
+      component:Deudas,
+      meta:{
+          auth:true
+        }
+
+  },
     {
         path:'/signup',
         name:'SignUp',

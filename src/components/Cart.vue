@@ -82,7 +82,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cancelar">
+          <v-btn color="blue darken-1" text @click="dialogCliente=false">
             Cancelar
           </v-btn>
           <v-btn color="blue darken-1" text @click="procesarPedido">
@@ -153,7 +153,8 @@ export default {
            id: shortid.generate(),
            name:this.nombreCliente,
            ci:this.ciCliente,
-           compras:[]
+           compras:[],
+           negocioId:this.$store.state.negocioSelected.id
         }
       }
 

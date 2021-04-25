@@ -16,7 +16,7 @@
             hide-details
           ></v-text-field>
         </v-card-title>
-        <v-data-table :headers="headers" :items="pedidos" :search="search">
+        <v-data-table :headers="headers" :items="$store.state.historialVentas" :search="search">
           <template v-slot:item.cantidadToCart="{ item }">
             <span>{{ item.cantidadToCart + "" + item.unidad }} </span>
           </template>
@@ -29,7 +29,7 @@
   </v-container>
 </template>
 <script>
-import { ApiService } from "../api";
+
 export default {
   name: "HistoryVentas",
   data: () => ({
@@ -46,30 +46,16 @@ export default {
         sortable: false,
         value: "title",
       },
+      {
+        text: "Cliente",
+        sortable: false,
+        value: "cliente",
+      },
       { text: "cantidad", value: "cantidadToCart" },
       { text: "Sub-total", value: "subtotal" },
     ],
   }),
-  computed: {
-    pedidos() {
-     
-        if (this.$store.state.negocioSelected !== null) {
-          ApiService.getPedidosFromHistory(
-            this.$store.state.negocioSelected.id
-          ).then(async (res) => {
-            this.$store.state.historialVentas = [];
-            res.data.map(p=>{
-              this.$store.state.historialVentas.push(p)
-
-            })
-          });
-        }
-
-        return this.$store.state.historialVentas
-      },
-     
   
-  },
 
 
 };

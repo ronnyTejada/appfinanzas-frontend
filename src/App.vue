@@ -157,6 +157,11 @@ export default {
         icon: "mdi-history",
         link: "/historialVentas",
       },
+       {
+        title: "Deudas por Cobrar",
+        icon: "mdi-cash-refund",
+        link: "/deudas",
+      },
       { title: "Estadisticas", icon: "mdi-chart-sankey", link: "/Statistics" },
     ],
   }),
@@ -180,7 +185,7 @@ export default {
   beforeMount() {
     this.$store.commit('setNegocios',this.$store.getters.isUserLogged)
 
-    
+    console.log('ddd')
   },
 };
 </script>

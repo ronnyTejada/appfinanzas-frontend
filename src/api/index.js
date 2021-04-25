@@ -40,10 +40,19 @@ export const ApiService = {
     pedidoToHistory:(pedido)=>axios.post(baseUrl+'pedidoToHistory/',{
         pedido
     }),
+    deudaToHistory:(item)=>axios.post(baseUrl+'deudaToHistory/',{
+        item
+    }),
     getPedidosFromHistory: (negocioId)=>axios.get(baseUrl+'getPedidosFromHistory/?negocio=' + negocioId),
     //CLIENTES FUNCTIONS
     postCliente:(cliente)=>axios.post(baseUrl+'postCliente/',{
         cliente
     }),
+    getClientes: (negocioId)=>axios.get(baseUrl+'getClientes/?negocio=' + negocioId),
+    selectNegocio:(newNegocioId,oldNegocioId)=>axios.put(baseUrl+'selectNegocio',{
+        newNegocioId,
+        oldNegocioId
+    }),
+
 
 }
