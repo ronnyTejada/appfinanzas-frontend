@@ -87,10 +87,15 @@ export default ({
       direccion:null,
       rubro:null,
       rif:null,
-      telefono:null
+      telefono:null,
+      status:false
     }),
     methods:{
       sendNegocio(){
+        if(this.$store.state.negocios.length===0){
+          this.status=true
+        }
+
         let negocio={
           id: shortid.generate(),
           name:this.name,
@@ -98,7 +103,8 @@ export default ({
           rubro:this.rubro,
           rif:this.rif,
           telefono:this.telefono,
-          propietario:this.$store.state.user
+          propietario:this.$store.state.user,
+          selected:this.status
         }
 
         ApiService.registrarNegocio(negocio).then(res=>{

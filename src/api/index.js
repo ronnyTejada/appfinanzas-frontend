@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseDomain = 'http://localhost:3000'
+const baseDomain = 'https://ventas-backend.herokuapp.com'
 const baseUrl = `${baseDomain}/api/`
 
 export const ApiService = {
