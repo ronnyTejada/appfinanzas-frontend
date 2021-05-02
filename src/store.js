@@ -99,7 +99,7 @@ export default new Vuex.Store({
             let existeC = false
 
             state.masVendidos.map(item => {
-              if (item.id === i.id) {
+              if (item.id === i.id && item.fecha === i.fecha) {
                 item.ventas += i.cantidadToCart
 
                 existeI = true
@@ -107,7 +107,7 @@ export default new Vuex.Store({
 
             })
             state.topClientes.map(c => {
-              if (c.ci === i.cliente) {
+              if (c.ci === i.cliente&& i.fecha === c.fecha) {
                 c.compras += 1
                 existeC = true
               }
@@ -138,9 +138,15 @@ export default new Vuex.Store({
       console.log(item)
       state.cart.map(i => {
         if (i.id === item.id && i.unidad === item.unidad) {
-          i.cantidadToCart += 1
+          if(i.byFraccion){
+            i.cantidadToCart += item.cantidadToCart 
+            
+          }else{
+            i.cantidadToCart += 1
+            item.cantidadExistente -= 1
+          }
           i.subtotal += parseInt(item.price)
-          item.cantidadExistente -= 1
+         
           existe = true
         }
       })
@@ -159,11 +165,16 @@ export default new Vuex.Store({
         i.negocioId = state.negocioSelected.id
         i.pagado = data.pagado
         i.cliente = data.cliente
-        i.idH = shortid.generate()
+        i.id = shortid.generate()
         console.log(i)
         if (i.pagado) {
           // let existe=false
-          i.ventas += i.cantidadToCart
+          if(i.byFraccion){
+            i.ventas+=1
+          }else{
+            i.ventas += i.cantidadToCart
+
+          }
           state.historialVentas.push(i)
 
         } else {

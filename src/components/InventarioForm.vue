@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid >
-    <span style="color:gray">AGREGAR PRODUCTOS</span>
+  <v-container fluid>
+    <span style="color: gray">AGREGAR PRODUCTOS</span>
 
     <form>
       <v-text-field
@@ -21,7 +21,7 @@
         @input="$v.email.$touch()"
         @blur="$v.email.$touch()"
       ></v-text-field>
-       <v-text-field
+      <v-text-field
         v-model="category"
         :error-messages="nameErrors"
         :counter="10"
@@ -46,15 +46,13 @@
         :error-messages="emailErrors"
         required
       ></v-select>
-      <v-text-field
-        v-model="img"
-        :error-messages="emailErrors"
-        label="Copia el link de la imagen"
-        required
-        @input="$v.email.$touch()"
-        @blur="$v.email.$touch()"
-      ></v-text-field>
-      <v-checkbox v-model="gramos" label="Vender Por Gramos?"></v-checkbox>
+     
+      <v-file-input truncate-length="15" label="Imagen"></v-file-input>
+      <v-checkbox v-model="unidad" label="Vender Por Unidad?"></v-checkbox>
+      <v-checkbox
+        v-model="fraccion"
+        label="Vender Por Fracción(KG,LTS,GRM)?"
+      ></v-checkbox>
 
       <v-btn class="mr-4" @click="submit"> submit </v-btn>
       <v-btn @click="clear"> clear </v-btn>
@@ -71,11 +69,12 @@ export default {
     title: null,
     price: null,
     img: null,
-    gramos: false,
-    unidadSelected:null,
-    items:['Kg.','Grm.','Lts.','Un.'],
-    cantidad:null,
-    category:null
+    fraccion: false,
+    unidadSelected: null,
+    items: ["Kg.", "Grm.", "Lts.", "Un."],
+    cantidad: null,
+    category: null,
+    unidad: false,
   }),
   methods: {
     submit() {
@@ -85,21 +84,20 @@ export default {
         title: this.title,
         src: this.img,
         cantidadToCart: 1,
-        cantidadExistente:parseInt(this.cantidad),
+        cantidadExistente: parseInt(this.cantidad),
         color: "#ffffff",
-        gramos: this.gramos,
-        unidad:this.unidadSelected,
-        category:this.category+" "+'todos',
-        negocioId:this.$store.state.negocioSelected.id,
-        ventas:0
+        byFraccion: this.fraccion,
+        byUnidad: this.unidad,
+        unidad: this.unidadSelected,
+        category: this.category + " " + "todos",
+        negocioId: this.$store.state.negocioSelected.id,
+        ventas: 0,
       };
       this.$store.state.items.push(item);
-       ApiService.postProducto(item).then(
-        (res) => {
-          item = {};
-          console.log(res);
-        }
-      );
+      ApiService.postProducto(item).then((res) => {
+        item = {};
+        console.log(res);
+      });
       this.$router.replace("/");
     },
   },

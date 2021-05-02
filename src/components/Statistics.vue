@@ -197,7 +197,7 @@
         </v-row>
       </v-col>
 
-      <v-col cols="12">
+      <!--v-col cols="12">
         <v-row style="margin-top: 50px" class="elevation-5">
           <v-col
             style="text-align: center; background-color: white"
@@ -208,7 +208,7 @@
             <column-chart :data="data"> </column-chart>
           </v-col>
         </v-row>
-      </v-col>
+      </v-col-->
     </v-col>
   </v-container>
 </template>
@@ -403,6 +403,7 @@ export default {
           data.push([d.title, d.ventas]);
         });
       }
+      console.log(data)
 
       return data;
     },

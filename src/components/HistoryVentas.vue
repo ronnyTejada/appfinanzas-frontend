@@ -16,7 +16,7 @@
             hide-details
           ></v-text-field>
         </v-card-title>
-        <v-data-table :headers="headers" :items="$store.state.historialVentas" :search="search">
+        <v-data-table :headers="headers" :items="$store.state.historialVentas" :search="search" >
           <template v-slot:item.cantidadToCart="{ item }">
             <span>{{ item.cantidadToCart + "" + item.unidad }} </span>
           </template>
@@ -55,6 +55,9 @@ export default {
       { text: "Sub-total", value: "subtotal" },
     ],
   }),
+  mounted(){
+    console.log(this.$store.state.historialVentas)
+  }
   
 
 

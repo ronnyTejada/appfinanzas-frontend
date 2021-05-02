@@ -1,19 +1,10 @@
 <template>
   <v-container style="background-color: #eeeeee; min-height: 100vh;" fluid>
     <v-col cols="12" sm="12" md="12">
-      <v-col cols="12">
-        <v-text-field
-          v-model="search"
-          solo
-          label="Buscar Producto"
-          clearable
-        ></v-text-field>
-      </v-col>
-      <span style="color: gray; margin-bottom: 150px">TODOS LOS PRODUCTOS</span>
-      <v-col
+       <v-col
         cols="12"
         sm="3"
-        style="position: absolute; top: 80px; right: 10px"
+        style="position: absolute; top: 80px; right: 10px;"
       >
         <v-select
           :items="$store.state.categories"
@@ -24,8 +15,18 @@
           
         ></v-select>
       </v-col>
+      <v-col cols="12">
+        <v-text-field
+          v-model="search"
+          solo
+          label="Buscar Producto"
+          clearable
+        ></v-text-field>
+      </v-col>
+      <!--span style="color: gray; margin-bottom: 150px">TODOS LOS PRODUCTOS</span-->
+     
 
-      <v-row>
+      <v-row style="margin-top:25px">
         <v-col
           cols="12"
           sm="6"
@@ -82,7 +83,7 @@
                     </v-btn>
                     <v-spacer />
                     <v-btn
-                      v-if="item.gramos"
+                      v-if="item.byFraccion"
                       class="ml-2 mt-5"
                       style="position: absolute; top: 120px; left: 130px"
                       @click="choiceGr(item)"
@@ -91,7 +92,7 @@
                       small
                       color="purple"
                     >
-                      Gramos
+                      Fracción
                     </v-btn>
                   </v-card-actions>
                 </div>
